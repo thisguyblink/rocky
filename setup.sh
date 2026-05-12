@@ -5,6 +5,7 @@ langaugeCount=0
 
 availableLanguages=("Ada" "C" "C#" "C++" "Go" "Java" "Javascript" "PHP" "Perl" "Python" "R" "Rust" "Visual Basic")
 selectedLanguages=("false" "false" "false" "false" "false" "false" "false" "false" "false" "false" "false" "false" "false")
+startupScripts=("ada.sh", "c.sh", "cpp.sh", "go.sh," "java.sh", "js.sh", "perl.sh", "php.sh", "python.sh", "r.sh", "rust.sh", "vb.sh")
 
 printf "Welcome to \e[31mR \e[33mO \e[32mC \e[36mK \e[34mY \e[0m\n"
 printf "Choose Languages for the Project\n"
@@ -70,6 +71,60 @@ done
 
 printf "\e[2D  "
 printf "\n"
+
+availablePorts=($(seq 9000 1 9030))
+availablePortsIndex=0
+
+for index in range {0..12}; do
+  if [[ "${selectedLanguages[$index]}" == "true" ]]; then 
+    printf "Running startup for: %s, " "${availableLanguages[$index]} \\n"
+    lang=${availableLanguages[$index]}
+      if [ "$lang" = "Ada" ]; then
+        echo "You selected Ada"
+      elif [ "$lang" = "C" ]; then
+          echo "You selected C"
+      elif [ "$lang" = "C#" ]; then
+          echo "You selected C#"
+      elif [ "$lang" = "C++" ]; then
+          cd servers/cpp
+          NEW_LINE="  svr.listen(\"127.0.0.1\", ${availablePorts[$availablePortsIndex]});"
+          sed -i '' "27 s/.*/$NEW_LINE/" cppServer.cpp
+          clang++ -std=c++17 -o cppServer cppServer.cpp 
+          tmux new -d -s cppServer './cppServer'
+          cd ../../
+          echo "C++ tmux session name is cppServer being served on Port: ${availablePorts[$availablePortsIndex]}"  >> info.txt
+
+      elif [ "$lang" = "Go" ]; then
+          echo "You selected Go"
+      elif [ "$lang" = "Java" ]; then
+          echo "You selected Java"
+      elif [ "$lang" = "Javascript" ]; then
+          echo "You selected Javascript"
+      elif [ "$lang" = "PHP" ]; then
+          echo "You selected PHP"
+      elif [ "$lang" = "Perl" ]; then
+          echo "You selected Perl"
+      elif [ "$lang" = "Python" ]; then
+          cd servers/python
+          NEW_LINE="    app.run(host='127.0.0.1', port=${availablePorts[$availablePortsIndex]})"
+          sed -i '' "20 s/.*/$NEW_LINE/" pyServer.py
+          tmux new -d -s pyServer 'source .venv/bin/activate && python3 pyServer.py'
+          cd ../../
+          echo "Python tmux session name is pyServer being served on Port: ${availablePorts[$availablePortsIndex]}"  >> info.txt
+      elif [ "$lang" = "R" ]; then
+          echo "You selected R"
+      elif [ "$lang" = "Rust" ]; then
+          echo "You selected Rust"
+      elif [ "$lang" = "Visual Basic" ]; then
+          echo "You selected Visual Basic"
+      else
+          echo "Language not found"
+      fi
+      ((availablePortsIndex++))
+      printf "\n"
+  fi
+done
+
 
 
   
